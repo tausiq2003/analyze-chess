@@ -1,3 +1,11 @@
+import Main from "./components/main-page";
+import NavBar from "./components/nav-bar";
+
 export default function Home() {
-    return <div>hello, welcome to chess analysis</div>;
+    return (
+        <>
+            <NavBar />
+            <Main />
+        </>
+    );
 }
