@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+
+/* debugging */
+/* *{
+    border: 1px solid red !important;
+} */
+
 body{
     background-color: #333;
     color: #fff;

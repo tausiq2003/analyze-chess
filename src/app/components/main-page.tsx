@@ -1,4 +1,6 @@
 import Link from "next/link";
+import Board from "./board";
+import Input from "./input";
 
 export default function Main() {
     return (
@@ -20,6 +22,18 @@ export default function Main() {
                     get processed, see your results.
                 </p>
                 <p className="tracking-tighter text-lg md:text-xl mt-2">
+                    If you have any issues or if the results are not accurate,
+                    please raise a issue on{" "}
+                    <Link
+                        href="https://github.com/tausiq2003/analyze-chess/issues"
+                        className="text-blue-400 underline"
+                    >
+                        this link
+                    </Link>
+                    .
+                </p>
+
+                <p className="tracking-tighter text-lg md:text-xl mt-2">
                     If you are still not sure, how to get it, see this{" "}
                     <Link
                         href="https://www.youtube.com/watch?v=DDkTX70ERSA"
@@ -30,9 +44,9 @@ export default function Main() {
                 </p>
                 <p className="text-lg md:text-xl mt-2">Good Luck</p>
             </div>
-            <div className="mt-10 border border-white mx-10 md:flex gap-2">
-                <div></div>
-                <div></div>
+            <div className="mt-10 mx-10 py-3 lg:flex lg:justify-around">
+                <Board />
+                <Input />
             </div>
         </>
     );
