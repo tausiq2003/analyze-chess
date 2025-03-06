@@ -4,7 +4,8 @@ import { Chessboard } from "react-chessboard";
 import { Chess } from "chess.js";
 
 export default function Board() {
-    const [game, setGame] = useState(new Chess());
+    //add setGame, deploying so removed
+    const [game] = useState(new Chess());
     const [boardWidth, setBoardWidth] = useState(630);
     const containerRef = useRef<HTMLDivElement>(null);
 
