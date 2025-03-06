@@ -1,96 +1,137 @@
 "use client";
-import { FormEvent, useActionState, useState } from "react";
-import Form from "next/form";
+import { useActionState, useState, useEffect, startTransition } from "react";
 import { DepthOption, InputOption } from "../types";
+import { validateInputs } from "@/lib/actions";
 
 export default function Input() {
+    // Initialize state with default or local storage values
     const [depth, setDepth] = useState<DepthOption>("14");
     const [option, setOption] = useState<InputOption>("pgn");
     const [input, setInput] = useState("");
-    const [error, setError] = useState("");
-    const [formIsValid, setformIsValid] = useState(false);
-    const pgnDisabled = input.trim() === "";
-    const status = pgnDisabled ? "bg-gray-400" : "bg-green-400";
+    const [state, formAction, pending] = useActionState(validateInputs, null);
+
+    const inpDisabled = input.trim() === "";
+    const status = inpDisabled ? "bg-gray-400" : "bg-green-400";
+
+    useEffect(() => {
+        localStorage.clear();
+    }, []);
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        startTransition(() => {
+            formAction(new FormData(e.currentTarget));
+        });
+    };
+
+    useEffect(() => {
+        if (state?.success) {
+            localStorage.setItem("gameInput", input);
+            localStorage.setItem("option", option);
+            localStorage.setItem("depth", depth);
+            localStorage.setItem("pgn", state?.processedData ?? "");
+        }
+    }, [state]);
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setInput(e.target.value);
+    };
+
+    const handleOptionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setOption(e.target.value as InputOption);
+    };
+
+    const handleDepthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedValue = e.target.value;
+        if (["14", "16", "18", "20", "22"].includes(selectedValue)) {
+            setDepth(selectedValue as DepthOption);
+        }
+    };
 
     return (
-        <div className="max-w-full rounded-xl shadow-lg bg-[#404040] p-6 max-lg:mt-20  max-lg:m-auto max-lg:max-w-xl ">
+        <div className="max-w-full rounded-xl shadow-lg bg-[#404040] p-6 max-lg:mt-20 max-lg:m-auto max-lg:max-w-xl">
             <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-8 text-center">
-                Give your details here:{" "}
+                Give your details here:
             </h1>
-            <div>
-                <Form action="" className="space-y-6">
-                    <div className="space-y-4">
-                        <label
-                            htmlFor="gameInput"
-                            className="block text-xl font-medium mb-3"
-                        >
-                            Enter your game details:
-                        </label>
-                        <div className="flex w-full max-h-12">
-                            <input
-                                type="text"
-                                id="gameInput"
-                                className="rounded-s-md bg-gray-600 w-full px-2 text-lg focus:outline-none focus:border-2 focus:border-gray-300"
-                                name="gameInput"
-                                value={input}
-                                placeholder="Game Details(PGN/Game Link)"
-                                onChange={(e) => setInput(e.target.value)}
-                                required
-                            />
-                            <select
-                                name="option"
-                                required
-                                className="inline w-[40%] border-gray-300 shadow-sm focus:border-gray-500 focus:ring-blue-500 p-3 bg-gray-800 text-sm"
-                                value={option}
-                                onChange={(e) =>
-                                    setOption(e.target.value as InputOption)
-                                }
-                            >
-                                <option value="pgn">PGN</option>
-                                <option value="link">Game Link</option>
-                            </select>
-                            <button
-                                title="Validate Input"
-                                disabled={pgnDisabled}
-                                className={`${status} aspect-square inline w-[20%] rounded-e-md`}
-                            >
-                                ✔️
-                            </button>
-                        </div>
-                    </div>
-                    <div>
-                        <label
-                            htmlFor="depth"
-                            className="block text-xl font-medium mb-3"
-                        >
-                            Analysis Depth
-                        </label>
+            <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="space-y-4">
+                    <label
+                        htmlFor="gameInput"
+                        className="block text-xl font-medium mb-3"
+                    >
+                        Enter your game details:
+                    </label>
+                    <div className="flex w-full max-h-12">
+                        <input
+                            type="text"
+                            id="gameInput"
+                            name="gameInput"
+                            value={input}
+                            onChange={handleInputChange}
+                            className="rounded-s-md bg-gray-600 w-full px-2 text-lg"
+                            placeholder="Game Details (PGN/Game Link)"
+                            required
+                        />
                         <select
-                            name="depth"
-                            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-500 focus:ring-blue-500 p-3 bg-gray-600 mb-5 text-lg"
-                            id="depth"
-                            value={depth}
-                            onChange={(e) =>
-                                setDepth(e.target.value as DepthOption)
-                            }
+                            name="option"
+                            value={option}
+                            onChange={handleOptionChange}
+                            className="inline w-[40%] p-3 bg-gray-800 text-sm"
                         >
-                            <option value="14">Depth 14</option>
-                            <option value="16">Depth 16</option>
-                            <option value="18">Depth 18</option>
-                            <option value="20">Depth 20</option>
-                            <option value="22">Depth 22</option>
+                            <option value="pgn">PGN</option>
+                            <option value="link">Game Link</option>
                         </select>
                     </div>
-                    <div>
-                        <button
-                            type="submit"
-                            className={` w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-xl font-medium text-white transform duration-300 focus:scale-105 transition-colors`}
-                        >
-                            Submit
-                        </button>
+                    {state?.errors?.gameInput && (
+                        <p className="text-red-500 text-sm">
+                            {state.errors.gameInput[0]}
+                        </p>
+                    )}
+                </div>
+
+                <div>
+                    <label
+                        htmlFor="depth"
+                        className="block text-xl font-medium mb-3"
+                    >
+                        Analysis Depth
+                    </label>
+                    <select
+                        id="depth"
+                        name="depth"
+                        value={depth}
+                        onChange={handleDepthChange}
+                        className="block w-full p-3 bg-gray-600 text-lg"
+                    >
+                        <option value="14">Depth 14</option>
+                        <option value="16">Depth 16</option>
+                        <option value="18">Depth 18</option>
+                        <option value="20">Depth 20</option>
+                        <option value="22">Depth 22</option>
+                    </select>
+                    {state?.errors?.depth && (
+                        <p className="text-red-500 text-sm">
+                            {state.errors.depth[0]}
+                        </p>
+                    )}
+                </div>
+
+                <div>
+                    <button
+                        type="submit"
+                        className={`${status} w-full py-3 text-xl text-white rounded-md`}
+                        disabled={inpDisabled || pending}
+                    >
+                        {pending ? "Submitting..." : "Submit"}
+                    </button>
+                </div>
+
+                {state?.success && (
+                    <div className="text-green-500 text-center">
+                        {state.success}
                     </div>
-                </Form>
-            </div>
+                )}
+            </form>
         </div>
     );
 }
