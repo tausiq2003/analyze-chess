@@ -42,6 +42,12 @@ export default function Main() {
                         video
                     </Link>
                 </p>
+                <p className="tracking-tighter text-lg md:text-xl mt-2">
+                    N.B.: I don&apos;t care about external apis, but they are
+                    used here, so, use it wisely don&apos;t abuse the system.
+                    Just open an issue, if you came across any vulnerabilities,
+                    bugs, or if you want to add a feature on the above link.
+                </p>
                 <p className="text-lg md:text-xl mt-2">Good Luck</p>
             </div>
             <div className="mt-10 mx-10 py-3 lg:flex lg:justify-around">
