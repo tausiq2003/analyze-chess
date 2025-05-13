@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Todos after form validation.
 
-## Getting Started
+Cool, everything now works, csv and ssv too, now it gets stored at localstorage, after everything is done, remember to add google captcha.
 
-First, run the development server:
+Ok now you have gameInput, option, depth and pgn
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- [X] This is after submission of the formData
+
+- [x] Now, we have to convert pgn to fen (really abstraction thing here, should be libraries there), if no libraries then parse it.
+Processing in UI/user:  
+- [x] Store that fen object in localStorage, in form of object or in form of array.
+
+- [] handle each fen object and send to stockfish, ofc write a program to analyze that, stockfish gives best move and ponder too
+
+- [] Now you have handled each fen(ofc check fen, before analyzing), then store that analyzed thing, primarily in localStorage (first thought), to be checked later, with following doing parallely
+
+- [] calculate eval bar, classification. Classification seems easy, because my GUT feels so. Then, you have to show accuracy of them
+
+- [] calculate accuracy too, google it
+
+- [] so you have to store like this
+```
+{
+    "black": "name",
+    "white": "name",
+    "black elo": "number",
+    "white elo": "number",
+    "opening": "name",
+    "currentpointer": "number",
+    "details": {
+        "moves": {
+            "1": {
+                "fen": "string",
+                "best move": "string",
+                "ponder move": "String", 
+                "classification": "string",
+                "evaluation":"+/-number",
+                "turn": "b/w",
+            }
+
+        }
+    }
+}
+
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- [] calculate the classification total and return a object to store it, like {brilliant: 0, best: 1 } for black and like that
+- [] show eval bar, and names in the board, and the response should come that analysis-data
+- [] there should be a button below named "Start review"
+- [] click on it
+- [] eval graph should be on top, don't know how to do it, some graphing libraries in js, lets see
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- [] users should be able to click on it and move to a fen, searching, so move number might be associated with it, show dots as brilliant and great and blunder moves
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- [] now you have all the classification details
+- [] now you have a move list below, more details on this
+- [] make the div scrollable
+- [] now you have the bottom bar where the curr move is a which classification
+- [] now you should have a rotate button, prev, next button.
+- [] save button will be added, after mvp is done
+- [] now you have arrows, it should be added at first
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

@@ -1,6 +1,6 @@
 import Link from "next/link";
-import Board from "./board";
 import Input from "./input";
+import BoardContainer from "./board-container";
 
 export default function Main() {
     return (
@@ -51,7 +51,7 @@ export default function Main() {
                 <p className="text-lg md:text-xl mt-2">Good Luck</p>
             </div>
             <div className="mt-10 mx-10 py-3 lg:flex lg:justify-around">
-                <Board />
+                <BoardContainer />
                 <Input />
             </div>
         </>

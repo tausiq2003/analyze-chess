@@ -65,6 +65,7 @@ export async function validateInputs(_: unknown, formData: FormData) {
 async function parsePGN(pgn: string) {
     try {
         const game = parse(pgn, { startRule: "game" });
+        console.log(typeof pgn);
         return JSON.stringify(game);
     } catch (err) {
         console.error((err as Error).message);
@@ -126,6 +127,7 @@ async function getPGNDataFromLink(input: string) {
         return res;
     }
 
+    // giving api for everyone to use, if chess-com-pgn.vercel.app gets rekt, please let me know, i will deploy my own so that you can use it, i have
     const { gameType, gameFormat, gameId } = res;
     try {
         const targetUrl =
@@ -151,8 +153,9 @@ async function getPGNDataFromLink(input: string) {
                 error: "No PGN found, try again, or open an issue in github",
             };
         }
-        console.log(pgnFromLink);
-        return pgnFromLink;
+        console.log(data.trim());
+        console.log(typeof data.trim());
+        return data.trim();
     } catch (error) {
         console.error(error);
         return {
