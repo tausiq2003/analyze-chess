@@ -3,12 +3,27 @@ import { Chess, validateFen } from "chess.js";
 import { useState, useEffect } from "react";
 import Board from "./board";
 import StockfishAnalysis from "./stockfish-analysis";
+import GraphChart from "./graph-chart";
+import {
+    Best,
+    Blunder,
+    Book,
+    Brilliant,
+    Excellent,
+    Good,
+    Great,
+    Inaccuracy,
+    Mistake,
+} from "../logos";
+import Review from "./review";
+import StockfishAnalysis1 from "./stockfish-anal";
 
 export default function Analysis() {
     const [fenList, setFenList] = useState<string[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const pgn = localStorage.getItem("pgn");
     const depth = localStorage.getItem("depth") ?? "14";
+    const [showAnalysis, setShowAnalysis] = useState<boolean>(true);
 
     useEffect(() => {
         async function getFenList(pgn: string | null) {
@@ -76,32 +91,90 @@ export default function Analysis() {
 
     return (
         <>
-            {/*<div>
-            <Board fen={fenList[currentIndex] || "start"} />
-            <div className="flex gap-4 mt-4">
-                <button onClick={handlePrev} disabled={currentIndex === 0}>
-                    {"<"}
-                </button>
-                <button
-                    onClick={handleNext}
-                    disabled={currentIndex === fenList.length - 1}
-                >
-                    {">"}
-                </button>
-            </div></div>*/}
-
-            {/*<div style={{ padding: "2rem" }}>
-                <h1>Chess Game Review: FEN Mapping</h1>
-                {fenPositions.map((fen, index) => (
-                    <StockfishAnalysis fen={fen} />
-                    <div key={index} style={{ marginBottom: "2rem" }}>
-                        <h2>Position {index + 1}</h2>
+            {showAnalysis ? (
+                <div>
+                    <h1 className="text-xl">Overview:</h1>
+                    <GraphChart />
+                    <div className="bg-[#4c4c4c] rounded-lg px-2 py-4 mt-4">
+                        <h1>Accuracy of Players: </h1>
+                        <p className="font-semibold">
+                            Tausiq Samantaray: <span>69.420%</span>
+                        </p>
+                        <p className="font-semibold">
+                            DeezNuggets: <span>69.420%</span>
+                        </p>
                     </div>
-                ))}
-            </div>*/}
-            <div>
-                <StockfishAnalysis fen={firstFen} depth={depth} />
-            </div>
+                    <div className="grid grid-cols-3  gap-4 mt-4 text-center">
+                        <div className="labels font-semibold">
+                            Tausiq Samantaray
+                        </div>
+                        <div></div>
+                        <div className="labels font-semibold">DeezNuggets</div>
+                        <p className="brilliant-moves">0 </p>
+                        <div className="brilliant-moves flex flex-row labelled-data gap-2">
+                            <Brilliant />
+                            Brilliant
+                        </div>
+                        <p className="brilliant-moves">0 </p>
+                        <p className="great-moves">0 </p>
+                        <div className="great-moves flex flex-row labelled-data gap-2">
+                            <Great />
+                            Great
+                        </div>
+                        <p className="great-moves">1 </p>
+                        <p className="best-moves">8 </p>
+                        <div className="book-moves flex flex-row labelled-data gap-2">
+                            <Best />
+                            Best
+                        </div>
+                        <p className="best-moves">16 </p>
+                        <p className="excel-moves">10 </p>
+                        <div className="excel-moves flex flex-row labelled-data gap-2">
+                            <Excellent />
+                            Excellent
+                        </div>
+                        <p className="excel-moves">7 </p>
+                        <p className="good-moves">7 </p>
+                        <div className="good-moves flex flex-row labelled-data gap-2">
+                            <Good />
+                            Good
+                        </div>
+                        <p className="good-moves">3 </p>
+                        <p className="book-moves">3 </p>
+                        <div className="book-moves flex flex-row labelled-data gap-2">
+                            <Book />
+                            Book
+                        </div>
+                        <p className="book-moves">2 </p>
+                        <p className="inaccurate-moves">2 </p>
+                        <div className="inaccurate-moves flex flex-row labelled-data gap-2">
+                            <Inaccuracy />
+                            Inaccuracy
+                        </div>
+                        <p className="inaccurate-moves">4 </p>
+                        <p className="mistake-moves">3 </p>
+                        <div className="mistake-moves flex flex-row labelled-data gap-2">
+                            <Mistake />
+                            Mistake
+                        </div>
+                        <p className="mistake-moves">1 </p>
+                        <p className="blunder-moves">1 </p>
+                        <div className="blunder-moves flex flex-row labelled-data gap-2">
+                            <Blunder />
+                            Blunder
+                        </div>
+                        <p className="blunder-moves">0 </p>
+                    </div>
+                    <button
+                        className="bg-green-400 w-full py-3 text-xl text-white rounded-md mt-4"
+                        onClick={() => setShowAnalysis(false)}
+                    >
+                        Go to review
+                    </button>
+                </div>
+            ) : (
+                <StockfishAnalysis1 fen={firstFen} />
+            )}
         </>
     );
 }

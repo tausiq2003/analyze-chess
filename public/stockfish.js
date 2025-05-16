@@ -1,5 +1,5 @@
 /*!
- * Stockfish.js 17 (c) 2025, Chess.com, LLC
+ * Stockfish.js 16.1 (c) 2024, Chess.com, LLC
  * https://github.com/nmrugg/stockfish.js
  * License: GPLv3
  *

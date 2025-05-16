@@ -13,3 +13,46 @@ body{
     color: #fff;
 
 }
+.labelled-data{
+    padding-left: 4rem;
+
+}
+.brilliant-moves{
+    color: #26c2a3;
+}
+.great-moves{
+    color:#749BBF;
+}
+.best-moves{
+    color: #81B64C;
+}
+.excel-moves{
+    color: #81B64C;
+}
+.good-moves{
+    color: #95b776;
+}
+.book-moves{
+    color: #D5A47D;
+
+}
+.inaccurate-moves{
+    color: #F7C631;
+
+}
+.mistake-moves{
+    color: #FFA459;
+
+}
+.blunder-moves{
+    color: #FA412D;
+
+
+}
+
+
+
+
+
+
+
