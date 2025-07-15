@@ -25,6 +25,7 @@ export default function BoardContainer({
     const [blackElo, setBlackElo] = useState<string>("???");
     const [whiteElo, setWhiteElo] = useState<string>("???");
     const [boardFlipped, setBoardFlipped] = useState<boolean>(false);
+    const [boardWidth, setBoardWidth] = useState<number>(400);
 
     useEffect(() => {
         if (bN?.trim() || bE?.trim() || wN?.trim() || wE?.trim()) {
@@ -47,7 +48,9 @@ export default function BoardContainer({
         : orientation;
 
     return (
-        <div className="w-full max-w-3xl">
+        <div className="w-full max-w-3xl ">
+            {/*TODO: TO BE REMOVED*/}
+            {/*}
             <div className="flex justify-end mb-2">
                 <button
                     onClick={flipBoard}
@@ -56,56 +59,27 @@ export default function BoardContainer({
                     Flip Board
                 </button>
             </div>
-
-            {/* Mobile layout */}
-            <div className="flex md:hidden">
-                <div
-                    className="flex items-stretch mr-2"
-                    style={{ height: "90%" }}
-                >
-                    <EvalBar
-                        evalScore={evalScore}
-                        orientation={actualOrientation}
-                    />
-                </div>
-
-                <div className="flex-1 flex flex-col">
+            */}
+            <div className="flex-1">
+                <div style={{ width: boardWidth, margin: "0 auto" }}>
                     <Label
                         name={boardFlipped ? whiteName : blackName}
                         elo={boardFlipped ? whiteElo : blackElo}
                         orientation={boardFlipped ? "white" : "black"}
                     />
-                    <Board
-                        fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-                        orientation={actualOrientation}
-                    />
-                    <Label
-                        name={boardFlipped ? blackName : whiteName}
-                        elo={boardFlipped ? blackElo : whiteElo}
-                        orientation={boardFlipped ? "black" : "white"}
-                    />
                 </div>
-            </div>
-
-            {/* Desktop layout */}
-            <div className="hidden md:flex md:items-center md:gap-3">
-                <div className="flex items-stretch" style={{ height: "500px" }}>
+                <div className="flex items-stretch max-md:ml-2.5">
                     <EvalBar
                         evalScore={evalScore}
                         orientation={actualOrientation}
                     />
-                </div>
-
-                <div className="flex-1">
-                    <Label
-                        name={boardFlipped ? whiteName : blackName}
-                        elo={boardFlipped ? whiteElo : blackElo}
-                        orientation={boardFlipped ? "white" : "black"}
-                    />
                     <Board
                         fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
                         orientation={actualOrientation}
+                        onBoardWidthChange={setBoardWidth}
                     />
+                </div>
+                <div style={{ width: boardWidth, margin: "0 auto" }}>
                     <Label
                         name={boardFlipped ? blackName : whiteName}
                         elo={boardFlipped ? blackElo : whiteElo}

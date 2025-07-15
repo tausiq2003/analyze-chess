@@ -50,7 +50,7 @@ export default function Main() {
                 </p>
                 <p className="text-lg md:text-xl mt-2">Good Luck</p>
             </div>
-            <div className="mt-10 mx-10 py-3 lg:flex lg:justify-around">
+            <div className="mt-10 px-10 py-3 lg:flex lg:justify-around mx-auto">
                 <BoardContainer />
                 <Input />
             </div>

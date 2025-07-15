@@ -30,29 +30,53 @@ class StockfishAnalysis {
                     );
                     if (infoRegex.test(message)) {
                         const multipv = message.match(/multipv (\d+)/)?.[1];
-                        const cp = message.match(/score cp (-?\d+)/)?.[1];
+                        let cp = message.match(/score cp (-?\d+)/)?.[1];
+                        const blackRegexMatch = new RegExp(`\bb\b`);
+                        if (!cp) {
+                            cp = "0";
+                        }
+                        if (blackRegexMatch.test(fen)) {
+                            cp = (parseInt(cp, 10) * -1).toString();
+                        }
+
                         const mate = message.match(/score mate (-?\d+)/)?.[1];
                         const line = message.match(/\bpv\b (.+)/)?.[1];
 
                         if (multipv && line) {
                             lines.push({
                                 multipv: parseInt(multipv, 10),
-                                cp: cp ? parseInt(cp, 10) : null,
+                                cp: parseInt(cp, 10),
                                 mate: mate ? parseInt(mate, 10) : null,
                                 line,
                             });
                         }
                     } else {
                         const cloudEvalUrl = `https://lichess.org/api/cloud-eval?fen=${fen}&multiPv=3`;
-                        const cloudEval: CloudEval =
-                            await axios.get(cloudEvalUrl);
-                        // to be checked tomorrow
-                        lines.push({
-                            multipv: 3,
-                            cp: cloudEval.pvs[0].cp,
-                            mate: cloudEval.pvs[0].cp || null,
-                            line: cloudEval.pvs[0].moves,
-                        });
+                        const cloudEval = axios.get(cloudEvalUrl);
+                        cloudEval
+                            .then((response) => {
+                                if (response.status === 200) {
+                                    const cloudData: CloudEval = response.data;
+                                    if (
+                                        cloudData.pvs &&
+                                        cloudData.pvs.length > 0
+                                    ) {
+                                        cloudData.pvs.forEach((pv, index) => {
+                                            lines.push({
+                                                multipv: index + 1,
+                                                cp: pv.cp,
+                                                mate: pv.cp || null,
+                                                line: pv.moves,
+                                            });
+                                        });
+                                    }
+                                }
+                            })
+                            .catch((error) => {
+                                throw new Error(
+                                    `Error fetching cloud evaluation: ${error}`,
+                                );
+                            });
                     }
 
                     // Best move marks end of analysis

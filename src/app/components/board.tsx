@@ -6,9 +6,11 @@ import { BoardOrientation } from "react-chessboard/dist/chessboard/types";
 export default function Board({
     fen,
     orientation,
+    onBoardWidthChange,
 }: {
     fen: string;
     orientation: string;
+    onBoardWidthChange?: (width: number) => void;
 }) {
     const [boardWidth, setBoardWidth] = useState(400);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -17,30 +19,30 @@ export default function Board({
         function handleResize() {
             if (containerRef.current) {
                 const containerWidth = containerRef.current.offsetWidth;
-                // Calculate appropriate board size based on viewport
+                const availableWidth = containerWidth - 40;
+
                 const viewportWidth = window.innerWidth;
                 const viewportHeight = window.innerHeight;
-                
-                // Use the smaller dimension with some padding to ensure board fits well
-                const maxSize = Math.min(containerWidth, viewportHeight);
-                
-                // Add additional scaling for very small screens
+
+                const maxSize = Math.min(availableWidth, viewportHeight * 0.8);
+                let newBoardWidth;
+
                 if (viewportWidth < 480) {
-                    setBoardWidth(Math.min(maxSize, containerWidth));
+                    newBoardWidth = Math.min(maxSize, availableWidth);
                 } else {
-                    setBoardWidth(maxSize);
+                    newBoardWidth = maxSize;
                 }
+                setBoardWidth(newBoardWidth);
+                onBoardWidthChange?.(newBoardWidth);
             }
         }
 
         handleResize();
         window.addEventListener("resize", handleResize);
-
         return () => window.removeEventListener("resize", handleResize);
-    }, []);
-
+    }, [onBoardWidthChange]);
     return (
-        <div ref={containerRef} className="w-full">
+        <div ref={containerRef} className="flex-1">
             <div className="w-full h-full">
                 <Chessboard
                     position={fen}

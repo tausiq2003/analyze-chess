@@ -22,32 +22,54 @@ export default function EvalBar({
     const whiteOnBottom = orientation === "white";
 
     return (
-        <div className="relative w-5 sm:w-6 mx-auto h-[90%] bg-gray-200 rounded overflow-hidden flex-shrink-0">
+        <div className="relative w-8 bg-transparent rounded overflow-hidden mr-2 self-stretch max-md:w-5">
             {/* White section */}
             <div
                 className="absolute transition-all bg-white"
-                style={whiteOnBottom ? 
-                    { bottom: 0, left: 0, width: '100%', height: `${percentage}%` } : 
-                    { top: 0, left: 0, width: '100%', height: `${percentage}%` }
+                style={
+                    whiteOnBottom
+                        ? {
+                              bottom: 0,
+                              left: 0,
+                              width: "100%",
+                              height: `${percentage}%`,
+                          }
+                        : {
+                              top: 0,
+                              left: 0,
+                              width: "100%",
+                              height: `${percentage}%`,
+                          }
                 }
             />
-            
+
             {/* Black section */}
             <div
                 className="absolute transition-all bg-black"
-                style={whiteOnBottom ? 
-                    { top: 0, left: 0, width: '100%', height: `${100 - percentage}%` } : 
-                    { bottom: 0, left: 0, width: '100%', height: `${100 - percentage}%` }
+                style={
+                    whiteOnBottom
+                        ? {
+                              top: 0,
+                              left: 0,
+                              width: "100%",
+                              height: `${100 - percentage}%`,
+                          }
+                        : {
+                              bottom: 0,
+                              left: 0,
+                              width: "100%",
+                              height: `${100 - percentage}%`,
+                          }
                 }
             />
-            
+
             <div className="absolute top-1/2 left-0 right-0 h-[1px] bg-gray-400" />
-            
+
             {!evalScore.startsWith("-") && (
-                <div 
+                <div
                     className={clsx(
                         "absolute left-0 right-0 flex items-center justify-center",
-                        whiteOnBottom ? "bottom-1" : "top-1"
+                        whiteOnBottom ? "bottom-1" : "top-1",
                     )}
                 >
                     <span className="text-[10px] sm:text-[10px] font-semibold text-black">
@@ -55,12 +77,12 @@ export default function EvalBar({
                     </span>
                 </div>
             )}
-            
+
             {evalScore.startsWith("-") && (
-                <div 
+                <div
                     className={clsx(
                         "absolute left-0 right-0 flex items-center justify-center",
-                        whiteOnBottom ? "top-1" : "bottom-1"
+                        whiteOnBottom ? "top-1" : "bottom-1",
                     )}
                 >
                     <span className="text-[8px] md:text-[10px] font-semibold text-white px-2">

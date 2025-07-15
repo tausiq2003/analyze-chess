@@ -54,7 +54,7 @@ export default function Input() {
     };
 
     return (
-        <div className="max-w-full rounded-xl shadow-lg bg-[#404040] p-6 max-lg:mt-20 max-lg:m-auto max-lg:max-w-xl">
+        <div className="max-w-full rounded-xl shadow-lg bg-[#404040] p-6 max-lg:mt-20 max-lg:m-auto max-lg:max-w-xl ">
             {showAnalysis ? (
                 <>
                     {state?.success && (
@@ -92,7 +92,7 @@ export default function Input() {
                                     name="option"
                                     value={option}
                                     onChange={handleOptionChange}
-                                    className="inline w-[40%] p-3 bg-gray-800 text-sm"
+                                    className="inline w-[40%] p-3 bg-gray-800 text-sm rounded-e-md min-w-[100px] text-white max-md:text-xs max-md:py-2"
                                 >
                                     <option value="pgn">PGN</option>
                                     <option value="link">Game Link</option>

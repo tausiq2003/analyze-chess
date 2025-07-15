@@ -12,7 +12,7 @@ export default function Label({
     return (
         <div
             className={clsx(
-                "rounded-md p-2 my-2",
+                "rounded-md p-2 my-2 max-md:p-1 max-md:pl-2",
                 orientation === "black"
                     ? "bg-[#262421] text-white"
                     : "bg-white text-[#262421]",
