@@ -1,6 +1,7 @@
 "use server";
 import { z } from "zod";
-import { parse } from "@mliebelt/pgn-parser";
+import { Chess } from "chess.js";
+import { GameDetails } from "@/app/types/chessData";
 
 const inpSchema = z.object({
     gameInput: z.string().min(1, "Game details cannot be empty"),
@@ -64,9 +65,65 @@ export async function validateInputs(_: unknown, formData: FormData) {
 
 async function parsePGN(pgn: string) {
     try {
-        const game = parse(pgn, { startRule: "game" });
-        console.log(typeof pgn);
-        return JSON.stringify(game);
+        const chessGame = new Chess();
+        chessGame.loadPgn(pgn);
+        const blackName = chessGame.header()["Black"] || "Anonymous";
+        const whiteName = chessGame.header()["White"] || "Anonymous";
+        const blackElo = chessGame.header()["BlackElo"] || "???";
+        const whiteElo = chessGame.header()["WhiteElo"] || "???";
+        const result = chessGame.header()["Result"];
+        const termination = chessGame.header()["Termination"];
+        if (!result || !termination) {
+            const chess2 = new Chess(chessGame.fen());
+            if (chess2.isGameOver()) {
+                if (chess2.isDraw()) {
+                    chessGame.header()["Result"] = "1/2-1/2";
+                    chessGame.header()["Termination"] = "Draw";
+                } else if (chess2.isStalemate()) {
+                    chessGame.header()["Result"] = "1/2-1/2";
+                    chessGame.header()["Termination"] = "Stalemate";
+                } else if (chess2.isCheckmate()) {
+                    if (chessGame.turn() === "w") {
+                        chessGame.header()["Result"] = "0-1";
+                        chessGame.header()["Termination"] = "Black won";
+                    } else {
+                        chessGame.header()["Result"] = "1-0";
+                        chessGame.header()["Termination"] = "White won";
+                    }
+                } else {
+                    chessGame.header()["Result"] = "*";
+                    chessGame.header()["Termination"] = "Unknown";
+                }
+            } else {
+                if (chessGame.turn() === "w") {
+                    chessGame.header()["Result"] = "0-1";
+                    chessGame.header()["Termination"] = "Black won";
+                } else {
+                    chessGame.header()["Result"] = "1-0";
+                    chessGame.header()["Termination"] = "White won";
+                }
+            }
+        }
+        const nonResult = chessGame.header()["Result"];
+        const nonTermination = chessGame.header()["Termination"];
+        const gameData: GameDetails = {
+            headers: {
+                black: {
+                    name: blackName,
+                    elo: blackElo,
+                },
+                white: {
+                    name: whiteName,
+                    elo: whiteElo,
+                },
+                result: result || nonResult,
+                termination: termination || nonTermination,
+            },
+            pgn: JSON.stringify(chessGame.pgn()).trim(),
+        };
+        console.log(gameData);
+
+        return JSON.stringify(gameData).trim();
     } catch (err) {
         console.error((err as Error).message);
         return {
@@ -153,9 +210,7 @@ async function getPGNDataFromLink(input: string) {
                 error: "No PGN found, try again, or open an issue in github",
             };
         }
-        console.log(data.trim());
-        console.log(typeof data.trim());
-        return data.trim();
+        return pgnFromLink;
     } catch (error) {
         console.error(error);
         return {

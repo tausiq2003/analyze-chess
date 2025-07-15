@@ -10,7 +10,7 @@ export default function BoardContainer({
     bE,
     wN,
     wE,
-    evalScore = "-0.3", // Test evaluation score
+    evalScore = "0.0",
     orientation = "white", // Default orientation
 }: {
     bN?: string;
