@@ -13,6 +13,7 @@ export default function NavBar() {
             <button className="bg-blue-500 rounded-lg py-1 px-2">
                 <Link
                     href="https://buymeacoffee.com/tausiqsamantaray"
+                    target="_blank"
                     className="text-sm md:text-xl"
                 >
                     Support me here ❤️

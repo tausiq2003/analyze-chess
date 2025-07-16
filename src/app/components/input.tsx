@@ -1,8 +1,10 @@
 "use client";
 import { useActionState, useState, useEffect, startTransition } from "react";
-import { DepthOption, InputOption } from "../types";
+import { DepthOption, InputOption } from "@/app/types/input";
 import { validateInputs } from "@/lib/actions";
 import Analysis from "./analysis";
+import useDataFlow from "../context/DataFlowContext";
+import { GameDetails } from "../types/chessData";
 
 export default function Input() {
     // Initialize state with default or local storage values
@@ -15,23 +17,28 @@ export default function Input() {
     const inpDisabled = input.trim() === "";
     const status = inpDisabled ? "bg-gray-400" : "bg-green-400";
 
-    useEffect(() => {
-        localStorage.clear();
-    }, []);
-
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         startTransition(() => {
             formAction(new FormData(e.currentTarget));
         });
     };
+    const { changeGameData } = useDataFlow();
 
     useEffect(() => {
         if (state?.success) {
-            localStorage.setItem("gameInput", input);
-            localStorage.setItem("option", option);
-            localStorage.setItem("depth", depth);
-            localStorage.setItem("pgn", state?.processedData ?? "");
+            const gameData = state.processedData as unknown as GameDetails;
+            changeGameData({
+                headers: {
+                    black: gameData.headers.black,
+                    white: gameData.headers.white,
+                    result: gameData.headers.result,
+                    moves: gameData.headers.moves,
+                    termination: gameData.headers.termination,
+                },
+                depth: depth,
+                pgn: gameData.pgn,
+            });
             setShowAnalysis(true);
         } else {
             setShowAnalysis(false);

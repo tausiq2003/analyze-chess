@@ -7,6 +7,7 @@ export default function Footer() {
 
             <Link
                 href="https://buymeacoffee.com/tausiqsamantaray"
+                target="_blank"
                 className="underline text-blue-400"
             >
                 Support me here

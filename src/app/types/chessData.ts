@@ -1,3 +1,4 @@
+import { DepthOption } from "./input";
 import { Position } from "./stockfishAnalysis";
 export interface GameDetails {
     headers: {
@@ -11,7 +12,9 @@ export interface GameDetails {
         };
         result: string;
         termination: string;
+        moves: number;
     };
+    depth: DepthOption;
     pgn: string;
     accuracyBlack?: string | null;
     accuracyWhite?: string | null;

@@ -73,6 +73,7 @@ async function parsePGN(pgn: string) {
         const whiteElo = chessGame.header()["WhiteElo"] || "???";
         const result = chessGame.header()["Result"];
         const termination = chessGame.header()["Termination"];
+
         if (!result || !termination) {
             const chess2 = new Chess(chessGame.fen());
             if (chess2.isGameOver()) {
@@ -118,6 +119,7 @@ async function parsePGN(pgn: string) {
                 },
                 result: result || nonResult,
                 termination: termination || nonTermination,
+                moves: chessGame.history().length,
             },
             pgn: JSON.stringify(chessGame.pgn()).trim(),
         };
