@@ -4,6 +4,9 @@ import { GameDetails } from "../types/chessData";
 interface DataFlowContextType {
     gameData: GameDetails;
     currentPtr: number;
+    setCurrentPtr: (ptr: number) => void;
+    boardFlipped: boolean;
+    setBoardFlipped: (flipped: boolean) => void;
     changeGameData: (update: Partial<GameDetails>) => void;
     moveNext: () => void;
     movePrev: () => void;
@@ -11,6 +14,9 @@ interface DataFlowContextType {
 export const DataFlowContext = React.createContext<DataFlowContextType>({
     gameData: {} as GameDetails,
     currentPtr: 0,
+    setCurrentPtr: () => {},
+    boardFlipped: false,
+    setBoardFlipped: () => {},
     changeGameData: () => {},
     moveNext: () => {},
     movePrev: () => {},

@@ -3,6 +3,7 @@ export interface Position {
     info: Line[];
     bestMove: string;
     winPercentage: number;
+    moveClassification?: string;
 }
 export interface Line {
     multipv: number;

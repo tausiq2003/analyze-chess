@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { DataFlowProvider } from "../context/DataFlowContext";
 import BoardContainer from "./board-container";
@@ -6,6 +7,7 @@ import Input from "./input";
 function Game() {
     const [gameData, setGameData] = React.useState({} as GameDetails);
     const [currentPtr, setCurrentPtr] = React.useState(0);
+    const [boardFlipped, setBoardFlipped] = React.useState(false);
     function changeGameData(update: Partial<GameDetails>) {
         setGameData((prev) => ({
             ...prev,
@@ -13,7 +15,7 @@ function Game() {
         }));
     }
     function moveNext() {
-        if (currentPtr < gameData.headers.moves - 1) {
+        if (gameData.headers && currentPtr < (gameData.headers.moves || 0) - 1) {
             setCurrentPtr((ptr) => ptr + 1);
         }
     }
@@ -28,6 +30,9 @@ function Game() {
                 gameData,
                 changeGameData,
                 currentPtr,
+                setCurrentPtr,
+                boardFlipped,
+                setBoardFlipped,
                 moveNext,
                 movePrev,
             }}

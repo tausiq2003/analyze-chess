@@ -1,29 +1,30 @@
 "use client";
-import { useActionState, useState, useEffect, startTransition } from "react";
-import { DepthOption, InputOption } from "@/app/types/input";
+import { useActionState, useState, startTransition, useEffect } from "react";
+import { GameDetails } from "@/app/types/chessData";
+import { DepthOption, InputOption } from "../types/input";
 import { validateInputs } from "@/lib/actions";
 import Analysis from "./analysis";
 import useDataFlow from "../context/DataFlowContext";
-import { GameDetails } from "../types/chessData";
 
 export default function Input() {
-    // Initialize state with default or local storage values
-    const [depth, setDepth] = useState<DepthOption>("14");
-    const [option, setOption] = useState<InputOption>("pgn");
+    const { changeGameData } = useDataFlow();
     const [input, setInput] = useState("");
-    const [state, formAction, pending] = useActionState(validateInputs, null);
+    const [option, setOption] = useState<InputOption>("pgn");
+    const [depth, setDepth] = useState<DepthOption>("14");
     const [showAnalysis, setShowAnalysis] = useState(false);
+    const [isProcessing, setIsProcessing] = useState(false);
+    const [state, formAction, pending] = useActionState(validateInputs, null);
 
     const inpDisabled = input.trim() === "";
     const status = inpDisabled ? "bg-gray-400" : "bg-green-400";
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setIsProcessing(true);
         startTransition(() => {
             formAction(new FormData(e.currentTarget));
         });
     };
-    const { changeGameData } = useDataFlow();
 
     useEffect(() => {
         if (state?.success) {
@@ -61,14 +62,9 @@ export default function Input() {
     };
 
     return (
-        <div className="max-w-full rounded-xl shadow-lg bg-[#404040] p-6 max-lg:mt-20 max-lg:m-auto max-lg:max-w-xl ">
+        <div className="max-w-full rounded-xl shadow-lg bg-[#404040] p-6 max-lg:mt-20 max-lg:m-auto max-lg:max-w-xl">
             {showAnalysis ? (
                 <>
-                    {state?.success && (
-                        <div className="text-green-500 text-center mb-6 text-sm">
-                            {state.success}
-                        </div>
-                    )}
                     <Analysis />
                 </>
             ) : (
@@ -99,7 +95,7 @@ export default function Input() {
                                     name="option"
                                     value={option}
                                     onChange={handleOptionChange}
-                                    className="inline w-[40%] p-3 bg-gray-800 text-sm rounded-e-md min-w-[100px] text-white max-md:text-xs max-md:py-2"
+                                    className="inline w-[40%] p-3 bg-gray-800 text-sm"
                                 >
                                     <option value="pgn">PGN</option>
                                     <option value="link">Game Link</option>
@@ -143,19 +139,20 @@ export default function Input() {
                             <button
                                 type="submit"
                                 className={`${status} w-full py-3 text-xl text-white rounded-md`}
-                                disabled={inpDisabled || pending}
+                                disabled={
+                                    inpDisabled || pending || isProcessing
+                                }
                             >
-                                {pending ? "Submitting..." : "Submit"}
+                                {pending || isProcessing
+                                    ? "Submitting..."
+                                    : "Submit"}
                             </button>
                         </div>
 
-                        {state?.success && (
-                            <>
-                                <div className="text-green-500 text-center">
-                                    {state.success}
-                                </div>
-                                <Analysis />
-                            </>
+                        {state?.success && !showAnalysis && (
+                            <div className="text-green-500 text-center">
+                                {state.success}
+                            </div>
                         )}
                     </form>
                 </>

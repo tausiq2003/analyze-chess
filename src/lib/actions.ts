@@ -63,7 +63,7 @@ export async function validateInputs(_: unknown, formData: FormData) {
     }
 }
 
-async function parsePGN(pgn: string) {
+async function parsePGN(pgn: string): Promise<GameDetails | { error: string }> {
     try {
         const chessGame = new Chess();
         chessGame.loadPgn(pgn);
@@ -121,11 +121,10 @@ async function parsePGN(pgn: string) {
                 termination: termination || nonTermination,
                 moves: chessGame.history().length,
             },
-            pgn: JSON.stringify(chessGame.pgn()).trim(),
+            pgn: chessGame.pgn().toString().trim(),
+            depth: "14", // default depth
         };
-        console.log(gameData);
-
-        return JSON.stringify(gameData).trim();
+        return gameData;
     } catch (err) {
         console.error((err as Error).message);
         return {

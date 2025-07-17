@@ -1,5 +1,4 @@
-import { CloudEval, Line, Position } from "@/app/types/stockfishAnalysis";
-import axios from "axios";
+import { Line, Position } from "@/app/types/stockfishAnalysis";
 import winPercentageOfLine from "./winpercentage";
 class StockfishAnalysis {
     private stockfish = new Worker("stockfish.js");
@@ -8,6 +7,7 @@ class StockfishAnalysis {
         this.depth = depth;
         this.stockfish.postMessage("uci");
         this.stockfish.postMessage("setoption name multipv value 3");
+        this.stockfish.postMessage("setoption name Threads value 4");
         this.stockfish.postMessage("isready");
     }
     async analyzePosition(
@@ -17,17 +17,16 @@ class StockfishAnalysis {
         this.stockfish.postMessage(`go depth ${this.depth}`);
 
         return new Promise((resolve, reject) => {
-            const lines: Line[] = [];
+            // Use a map to always keep the latest info for each multipv
+            const multipvMap = new Map<number, Line>();
             let bestMove: string | undefined;
 
             const handleMessage = (event: MessageEvent) => {
                 try {
                     const message: string = event.data;
-
-                    // Match analysis info lines
-                    const infoRegex = new RegExp(
-                        `^info .+ depth ${this.depth} .+`,
-                    );
+                    console.log('Stockfish message:', message); // debug log
+                    // Match any info line with multipv
+                    const infoRegex = /^info .+ multipv (\d+) .+/;
                     if (infoRegex.test(message)) {
                         const multipv = message.match(/multipv (\d+)/)?.[1];
                         let cp = message.match(/score cp (-?\d+)/)?.[1];
@@ -38,56 +37,30 @@ class StockfishAnalysis {
                         if (blackRegexMatch.test(fen)) {
                             cp = (parseInt(cp, 10) * -1).toString();
                         }
-
                         const mate = message.match(/score mate (-?\d+)/)?.[1];
                         const line = message.match(/\bpv\b (.+)/)?.[1];
-
                         if (multipv && line) {
-                            lines.push({
+                            multipvMap.set(parseInt(multipv, 10), {
                                 multipv: parseInt(multipv, 10),
                                 cp: parseInt(cp, 10),
                                 mate: mate ? parseInt(mate, 10) : null,
                                 line,
                             });
                         }
-                    } else {
-                        const cloudEvalUrl = `https://lichess.org/api/cloud-eval?fen=${fen}&multiPv=3`;
-                        const cloudEval = axios.get(cloudEvalUrl);
-                        cloudEval
-                            .then((response) => {
-                                if (response.status === 200) {
-                                    const cloudData: CloudEval = response.data;
-                                    if (
-                                        cloudData.pvs &&
-                                        cloudData.pvs.length > 0
-                                    ) {
-                                        cloudData.pvs.forEach((pv, index) => {
-                                            lines.push({
-                                                multipv: index + 1,
-                                                cp: pv.cp,
-                                                mate: pv.cp || null,
-                                                line: pv.moves,
-                                            });
-                                        });
-                                    }
-                                }
-                            })
-                            .catch((error) => {
-                                throw new Error(
-                                    `Error fetching cloud evaluation: ${error}`,
-                                );
-                            });
                     }
-
-                    // Best move marks end of analysis
                     if (message.startsWith("bestmove")) {
                         bestMove = message.split(" ")[1];
                         this.stockfish.removeEventListener(
                             "message",
                             handleMessage,
                         );
-                        clearTimeout(timeoutId); // clear timeout
+                        clearTimeout(timeoutId);
+                        const lines = Array.from(multipvMap.values()).sort((a, b) => a.multipv - b.multipv);
+                        if (lines.length > 0) {
                         resolve({ lines, bestMove });
+                        } else {
+                            reject(new Error("No analysis data received from Stockfish. (See console for Stockfish output)"));
+                        }
                     }
                 } catch (err) {
                     this.stockfish.removeEventListener(
@@ -104,7 +77,7 @@ class StockfishAnalysis {
             const timeoutId = setTimeout(() => {
                 this.stockfish.removeEventListener("message", handleMessage);
                 reject(new Error("Stockfish analysis timed out."));
-            }, 5000);
+            }, 20000); // 20 seconds
         });
     }
     async getPositionDetails(fen: string): Promise<Position> {
@@ -128,3 +101,5 @@ class StockfishAnalysis {
         }
     }
 }
+
+export default StockfishAnalysis;

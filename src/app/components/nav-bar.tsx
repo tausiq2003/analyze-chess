@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function NavBar() {
     return (
-        <nav className="flex flex-row justify-between md:px-4 items-center py-4 px-2 gap-2  border-b border-white bg-black text-center">
+        <nav className="flex flex-row justify-between md:px-4 items-center py-4 px-2 gap-2  border-b border-white bg-black text-center overflow-hidden">
             <p className="tracking-tight md:text-xl md:hidden block">
                 If you like this project, please support
             </p>
