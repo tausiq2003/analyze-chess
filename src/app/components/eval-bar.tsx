@@ -3,13 +3,20 @@ import clsx from "clsx";
 export default function EvalBar({
     evalScore,
     orientation,
+    mate,
 }: {
     evalScore: string;
     orientation: string;
+    mate?: number | null;
 }) {
     let percentage = 50;
+    let displayScore = evalScore;
 
-    if (evalScore.startsWith("M")) {
+    // If mate is present, override displayScore and percentage
+    if (mate !== undefined && mate !== null) {
+        displayScore = mate > 0 ? `M${mate}` : `-M${-mate}`;
+        percentage = mate > 0 ? 100 : 0;
+    } else if (evalScore.startsWith("M")) {
         percentage = 100;
     } else if (evalScore.startsWith("-M")) {
         percentage = 0;
@@ -20,7 +27,6 @@ export default function EvalBar({
 
     // This determines which color goes where based on orientation
     const whiteOnBottom = orientation === "white";
-
     return (
         <div className="relative w-8 bg-transparent rounded overflow-hidden mr-2 self-stretch max-md:w-5">
             {/* White section */}
@@ -65,7 +71,7 @@ export default function EvalBar({
 
             <div className="absolute top-1/2 left-0 right-0 h-[1px] bg-gray-400" />
 
-            {!evalScore.startsWith("-") && (
+            {displayScore.startsWith("M") && (
                 <div
                     className={clsx(
                         "absolute left-0 right-0 flex items-center justify-center",
@@ -73,12 +79,12 @@ export default function EvalBar({
                     )}
                 >
                     <span className="text-[10px] sm:text-[10px] font-semibold text-black">
-                        {evalScore}
+                        {displayScore}
                     </span>
                 </div>
             )}
 
-            {evalScore.startsWith("-") && (
+            {displayScore.startsWith("-M") && (
                 <div
                     className={clsx(
                         "absolute left-0 right-0 flex items-center justify-center",
@@ -86,10 +92,40 @@ export default function EvalBar({
                     )}
                 >
                     <span className="text-[8px] md:text-[10px] font-semibold text-white px-2">
-                        {evalScore}
+                        {displayScore}
                     </span>
                 </div>
             )}
+
+            {!displayScore.startsWith("M") &&
+                !displayScore.startsWith("-M") &&
+                !displayScore.startsWith("-") && (
+                    <div
+                        className={clsx(
+                            "absolute left-0 right-0 flex items-center justify-center",
+                            whiteOnBottom ? "bottom-1" : "top-1",
+                        )}
+                    >
+                        <span className="text-[10px] sm:text-[10px] font-semibold text-black">
+                            {displayScore}
+                        </span>
+                    </div>
+                )}
+
+            {!displayScore.startsWith("M") &&
+                !displayScore.startsWith("-M") &&
+                displayScore.startsWith("-") && (
+                    <div
+                        className={clsx(
+                            "absolute left-0 right-0 flex items-center justify-center",
+                            whiteOnBottom ? "top-1" : "bottom-1",
+                        )}
+                    >
+                        <span className="text-[8px] md:text-[10px] font-semibold text-white px-2">
+                            {displayScore}
+                        </span>
+                    </div>
+                )}
         </div>
     );
 }

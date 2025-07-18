@@ -9,7 +9,8 @@ import useDataFlow from "../context/DataFlowContext";
 export default function Input() {
     const { changeGameData } = useDataFlow();
     const [input, setInput] = useState("");
-    const [option, setOption] = useState<InputOption>("pgn");
+    // Default option is now "link"
+    const [option, setOption] = useState<InputOption>("link");
     const [depth, setDepth] = useState<DepthOption>("14");
     const [showAnalysis, setShowAnalysis] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
@@ -44,14 +45,13 @@ export default function Input() {
         } else {
             setShowAnalysis(false);
         }
+        setIsProcessing(false);
     }, [state]);
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleInputChange = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    ) => {
         setInput(e.target.value);
-    };
-
-    const handleOptionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setOption(e.target.value as InputOption);
     };
 
     const handleDepthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -62,45 +62,70 @@ export default function Input() {
     };
 
     return (
-        <div className="max-w-full rounded-xl shadow-lg bg-[#404040] p-6 max-lg:mt-20 max-lg:m-auto max-lg:max-w-xl">
+        <div className="min-w-[35%] max-w-[35%] rounded-xl shadow-lg bg-[#404040] p-6 max-lg:mt-20 max-lg:m-auto overflow-auto max-lg:min-w-[90%] max-lg:max-w-[90%] ">
             {showAnalysis ? (
-                <>
-                    <Analysis />
-                </>
+                <Analysis />
             ) : (
                 <>
-                    <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-8 text-center">
+                    <h1 className="text-2xl sm:text-3xl font-bold mb-4 text-center">
                         Give your details here:
                     </h1>
                     <form onSubmit={handleSubmit} className="space-y-6">
+                        <input type="hidden" name="option" value={option} />
+
                         <div className="space-y-4">
-                            <label
-                                htmlFor="gameInput"
-                                className="block text-xl font-medium mb-3"
-                            >
+                            <label className="block text-xl font-medium mb-2">
                                 Enter your game details:
                             </label>
-                            <div className="flex w-full max-h-12">
+
+                            <div className="flex rounded-md overflow-hidden border border-gray-500">
+                                <button
+                                    type="button"
+                                    onClick={() => setOption("link")}
+                                    className={`w-full p-2 text-lg font-medium transition-colors ${
+                                        option === "link"
+                                            ? "bg-gray-800 text-white"
+                                            : "bg-gray-600 text-gray-300"
+                                    }`}
+                                >
+                                    Link
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setOption("pgn")}
+                                    className={`w-full p-2 text-lg font-medium transition-colors ${
+                                        option === "pgn"
+                                            ? "bg-gray-800 text-white"
+                                            : "bg-gray-600 text-gray-300"
+                                    }`}
+                                >
+                                    PGN
+                                </button>
+                            </div>
+
+                            {option === "link" ? (
                                 <input
                                     type="text"
                                     id="gameInput"
                                     name="gameInput"
                                     value={input}
                                     onChange={handleInputChange}
-                                    className="rounded-s-md bg-gray-600 w-full px-2 text-lg"
-                                    placeholder="Game Details (PGN/Game Link)"
+                                    className="rounded-md bg-gray-600 w-full p-3 text-lg"
+                                    placeholder="Enter Game Link"
                                     required
                                 />
-                                <select
-                                    name="option"
-                                    value={option}
-                                    onChange={handleOptionChange}
-                                    className="inline w-[40%] p-3 bg-gray-800 text-sm"
-                                >
-                                    <option value="pgn">PGN</option>
-                                    <option value="link">Game Link</option>
-                                </select>
-                            </div>
+                            ) : (
+                                <textarea
+                                    id="gameInput"
+                                    name="gameInput"
+                                    value={input}
+                                    onChange={handleInputChange}
+                                    className="rounded-md bg-gray-600 w-full p-2 text-lg min-h-[120px] resize-y"
+                                    placeholder="Enter PGN"
+                                    required
+                                />
+                            )}
+
                             {state?.errors?.gameInput && (
                                 <p className="text-red-500 text-sm">
                                     {state.errors.gameInput[0]}
@@ -120,11 +145,12 @@ export default function Input() {
                                 name="depth"
                                 value={depth}
                                 onChange={handleDepthChange}
-                                className="block w-full p-3 bg-gray-600 text-lg"
+                                className="block w-full p-3 bg-gray-600 text-lg rounded-md"
                             >
                                 <option value="14">Depth 14</option>
                                 <option value="16">Depth 16</option>
                                 <option value="18">Depth 18</option>
+                                <option value="19">Depth 19</option>
                                 <option value="20">Depth 20</option>
                                 <option value="22">Depth 22</option>
                             </select>
@@ -148,12 +174,6 @@ export default function Input() {
                                     : "Submit"}
                             </button>
                         </div>
-
-                        {state?.success && !showAnalysis && (
-                            <div className="text-green-500 text-center">
-                                {state.success}
-                            </div>
-                        )}
                     </form>
                 </>
             )}

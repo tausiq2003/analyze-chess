@@ -10,6 +10,8 @@ interface DataFlowContextType {
     changeGameData: (update: Partial<GameDetails>) => void;
     moveNext: () => void;
     movePrev: () => void;
+    arrows: { from: string; to: string; color: string;}[];
+    setArrows: (arrows: { from: string; to: string; color: string}[]) => void;
 }
 export const DataFlowContext = React.createContext<DataFlowContextType>({
     gameData: {} as GameDetails,
@@ -20,6 +22,8 @@ export const DataFlowContext = React.createContext<DataFlowContextType>({
     changeGameData: () => {},
     moveNext: () => {},
     movePrev: () => {},
+    arrows: [],
+    setArrows: () => {},
 });
 
 export const DataFlowProvider = DataFlowContext.Provider;

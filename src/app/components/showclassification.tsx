@@ -9,6 +9,7 @@ import {
     Inaccuracy,
     Mistake,
 } from "@/app/logos";
+import { uciToSan } from "../utils/moveconversions";
 
 type ClassificationType =
     | "brilliant"
@@ -29,6 +30,7 @@ interface MoveData {
 
 interface Props {
     moves: MoveData[];
+    fen?: string;
 }
 
 const classificationMap = {
@@ -45,7 +47,7 @@ const classificationMap = {
     excellent: {
         icon: <Excellent />,
         text: "excellent",
-        className: "excel-moves",
+        className: "excellent-moves",
     },
     best: {
         icon: <Best />,
@@ -60,7 +62,7 @@ const classificationMap = {
     inaccuracy: {
         icon: <Inaccuracy />,
         text: "inaccuracy",
-        className: "inaccurate-moves",
+        className: "inaccuracy-moves",
     },
     mistake: {
         icon: <Mistake />,
@@ -81,38 +83,50 @@ const classificationMap = {
 
 export type { MoveData };
 
-function ShowClassification({ moves }: Props) {
+function ShowClassification({ moves, fen }: Props) {
     return (
         <div className="flex flex-col gap-1">
-            {moves.map(({ move, classification, bestMove }) => {
+            {moves.map(({ move, classification, bestMove }, idx) => {
                 const fallback = classificationMap["best"];
-                const { icon, text, className } = classificationMap[classification] || fallback;
-                const firstLine =
-                    classification === "book"
-                        ? `${move} is book move`
-                        : `${move} is ${text} move`;
+                const { icon, text, className } =
+                    classificationMap[classification] || fallback;
 
+                // for book, best, great, brilliant it doesn't show the best move
+                if (
+                    ["book", "best", "great", "brilliant"].includes(
+                        classification,
+                    )
+                ) {
+                    return (
+                        <div
+                            key={move + idx}
+                            className={`flex items-center gap-2 text-sm ${className}`}
+                        >
+                            {icon}
+                            <span>{`${move} is ${text} move`}</span>
+                        </div>
+                    );
+                }
+                let bestSan = bestMove;
+                if (bestMove && fen) {
+                    bestSan = uciToSan(fen, bestMove);
+                }
+                // compare move and bestSan as SAN, and ensure move index is offset by +1 if needed
+                const showBestLine = bestSan && move !== bestSan;
                 return (
-                    <div key={move} className="flex flex-col gap-0.5">
+                    <div key={move + idx} className="flex flex-col gap-0.5">
                         <div
                             className={`flex items-center gap-2 text-sm ${className}`}
                         >
                             {icon}
-                            <span>{firstLine}</span>
+                            <span>{`${move} is ${text} move`}</span>
                         </div>
-                        {[
-                            "excellent",
-                            "good",
-                            "inaccuracy",
-                            "mistake",
-                            "blunder",
-                        ].includes(classification) &&
-                            bestMove && (
-                                <div className="flex items-center gap-2 text-sm best-moves">
-                                    <Best />
-                                    <span>{bestMove} is best move</span>
-                                </div>
-                            )}
+                        {showBestLine && (
+                            <div className="flex items-center gap-2 text-sm best-moves">
+                                {classificationMap["best"].icon}
+                                <span>{`${bestSan} is best move`}</span>
+                            </div>
+                        )}
                     </div>
                 );
             })}

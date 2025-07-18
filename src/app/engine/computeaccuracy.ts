@@ -1,3 +1,5 @@
+import { Position } from "@/app/types/stockfishAnalysis";
+
 function ceilsNumber(num: number, min: number, max: number): number {
     return Math.max(min, Math.min(max, num));
 }
@@ -30,32 +32,48 @@ function getWeightedMean(values: number[], weights: number[]): number {
     return weightSum === 0 ? 0 : sum / weightSum;
 }
 
-import { Position } from "@/app/types/stockfishAnalysis";
-
 function getPositionWinPercentage(position: Position): number {
-    if (position.info[0]?.cp !== undefined && position.info[0]?.cp !== null) {
-        return winPercentageFromCp(position.info[0].cp);
-    } else if (position.info[0]?.mate !== undefined && position.info[0]?.mate !== null) {
-        return winPercentageFromMate(position.info[0].mate!);
-    } else {
-        return 50;
+    const line = position.info[0];
+    if (!line) {
+        throw new Error(
+            `Position for FEN "${position.fen}" has no analysis info.`,
+        );
     }
+
+    if (typeof line.mate === "number") {
+        return winPercentageFromMate(line.mate);
+    }
+    if (typeof line.cp === "number") {
+        return winPercentageFromCp(line.cp);
+    }
+
+    // Fails loudly instead of silently returning 50.
+    throw new Error(
+        `Line for FEN "${position.fen}" must have either cp or mate value.`,
+    );
 }
 
 function winPercentageFromCp(cp: number): number {
-    const cpCeiled = ceilsNumber(cp, -1000, 1000);
+    const cappedCp = ceilsNumber(cp, -15000, 15000);
     const MULTIPLIER = -0.00368208;
-    const winChances = 2 / (1 + Math.exp(MULTIPLIER * cpCeiled)) - 1;
+    const winChances = 2 / (1 + Math.exp(MULTIPLIER * cappedCp)) - 1;
     return 50 + 50 * winChances;
 }
 
 function winPercentageFromMate(mate: number): number {
-    const mateInf = mate * Infinity;
-    return winPercentageFromCp(mateInf);
+    // If mate is positive, the current player is winning.
+    if (mate > 0) {
+        return 100;
+    }
+    return 0;
 }
 
 function getAccuracyWeights(movesWinPercentage: number[]): number[] {
-    const windowSize = ceilsNumber(Math.ceil(movesWinPercentage.length / 10), 2, 8);
+    const windowSize = ceilsNumber(
+        Math.ceil(movesWinPercentage.length / 10),
+        2,
+        8,
+    );
     const windows: number[][] = [];
     const halfWindowSize = Math.round(windowSize / 2);
     for (let i = 1; i < movesWinPercentage.length; i++) {
@@ -92,9 +110,15 @@ function getMovesAccuracy(movesWinPercentage: number[]): number[] {
     });
 }
 
-function getPlayerAccuracy(movesAccuracy: number[], weights: number[], player: "white" | "black"): number {
+function getPlayerAccuracy(
+    movesAccuracy: number[],
+    weights: number[],
+    player: "white" | "black",
+): number {
     const remainder = player === "white" ? 0 : 1;
-    const playerAccuracies = movesAccuracy.filter((_, index) => index % 2 === remainder);
+    const playerAccuracies = movesAccuracy.filter(
+        (_, index) => index % 2 === remainder,
+    );
     const playerWeights = weights.filter((_, index) => index % 2 === remainder);
     const weightedMean = getWeightedMean(playerAccuracies, playerWeights);
     const harmonicMean = getHarmonicMean(playerAccuracies);

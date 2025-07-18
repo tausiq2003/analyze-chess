@@ -8,6 +8,7 @@ function Game() {
     const [gameData, setGameData] = React.useState({} as GameDetails);
     const [currentPtr, setCurrentPtr] = React.useState(0);
     const [boardFlipped, setBoardFlipped] = React.useState(false);
+    const [arrows, setArrows] = React.useState<{ from: string; to: string; color: string; width?: number }[]>([]);
     function changeGameData(update: Partial<GameDetails>) {
         setGameData((prev) => ({
             ...prev,
@@ -15,7 +16,7 @@ function Game() {
         }));
     }
     function moveNext() {
-        if (gameData.headers && currentPtr < (gameData.headers.moves || 0) - 1) {
+        if (gameData.headers && currentPtr < (gameData.headers.moves || 0)) {
             setCurrentPtr((ptr) => ptr + 1);
         }
     }
@@ -35,6 +36,8 @@ function Game() {
                 setBoardFlipped,
                 moveNext,
                 movePrev,
+                arrows,
+                setArrows,
             }}
         >
             <BoardContainer />

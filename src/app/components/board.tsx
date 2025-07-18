@@ -1,7 +1,11 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import { Chessboard } from "react-chessboard";
-import { BoardOrientation } from "react-chessboard/dist/chessboard/types";
+import {
+    BoardOrientation,
+    Arrow,
+} from "react-chessboard/dist/chessboard/types";
+import useDataFlow from "../context/DataFlowContext";
 
 export default function Board({
     fen,
@@ -14,6 +18,13 @@ export default function Board({
 }) {
     const [boardWidth, setBoardWidth] = useState(400);
     const containerRef = useRef<HTMLDivElement>(null);
+    const { arrows } = useDataFlow();
+    // Map arrows to [from, to, color] for Chessboard
+    const chessboardArrows = arrows.map((a) => [
+        a.from,
+        a.to,
+        a.color,
+    ]) as Arrow[];
 
     useEffect(() => {
         function handleResize() {
@@ -55,6 +66,7 @@ export default function Board({
                         backgroundColor: "#EBECD0",
                     }}
                     boardOrientation={orientation as BoardOrientation}
+                    customArrows={chessboardArrows}
                 />
             </div>
         </div>

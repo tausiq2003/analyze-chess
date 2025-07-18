@@ -46,8 +46,6 @@ export async function validateInputs(_: unknown, formData: FormData) {
             };
         }
 
-        console.log(processedData);
-
         return {
             success:
                 "Data sent successfully, now wait for a minute or two as it's getting processed.",
@@ -62,11 +60,10 @@ export async function validateInputs(_: unknown, formData: FormData) {
         };
     }
 }
-
 async function parsePGN(pgn: string): Promise<GameDetails | { error: string }> {
     try {
         const chessGame = new Chess();
-        chessGame.loadPgn(pgn);
+        chessGame.loadPgn(pgn, { strict: true });
         const blackName = chessGame.header()["Black"] || "Anonymous";
         const whiteName = chessGame.header()["White"] || "Anonymous";
         const blackElo = chessGame.header()["BlackElo"] || "???";
