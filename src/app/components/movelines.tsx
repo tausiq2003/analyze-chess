@@ -61,12 +61,15 @@ export default function MoveLines() {
             } catch {
                 sanLine = line.line;
             }
+            let evalDisplay = "0.00";
+            if (line.mate !== undefined && line.mate !== null) {
+                evalDisplay = (line.mate > 0 ? "M" + line.mate : "-M" + Math.abs(line.mate));
+            } else if (line.cp !== undefined && line.cp !== null) {
+                evalDisplay = (line.cp / 100).toFixed(2);
+            }
             moveLines.push({
                 san: sanLine,
-                eval:
-                    line.cp !== undefined && line.cp !== null
-                        ? (line.cp / 100).toFixed(2)
-                        : "0.00",
+                eval: evalDisplay,
             });
         }
     }
@@ -86,7 +89,7 @@ export default function MoveLines() {
                         <div className="flex flex-wrap items-center gap-2 text-white text-sm">
                             <p
                                 className={`min-w-[50px] shrink-0 p-1 font-semibold rounded-md ${
-                                    parseFloat(line.eval) < 0
+                                    line.eval.startsWith("-") || line.eval.startsWith("-M")
                                         ? "bg-black text-white"
                                         : "bg-white text-black"
                                 }`}
