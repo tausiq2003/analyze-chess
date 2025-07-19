@@ -4,11 +4,14 @@ import { DataFlowProvider } from "../context/DataFlowContext";
 import BoardContainer from "./board-container";
 import { GameDetails } from "../types/chessData";
 import Input from "./input";
+import GoogleCaptchaWrapper from "./googlecaptchawrapper";
 function Game() {
     const [gameData, setGameData] = React.useState({} as GameDetails);
     const [currentPtr, setCurrentPtr] = React.useState(0);
     const [boardFlipped, setBoardFlipped] = React.useState(false);
-    const [arrows, setArrows] = React.useState<{ from: string; to: string; color: string; width?: number }[]>([]);
+    const [arrows, setArrows] = React.useState<
+        { from: string; to: string; color: string }[]
+    >([]);
     function changeGameData(update: Partial<GameDetails>) {
         setGameData((prev) => ({
             ...prev,
@@ -41,7 +44,9 @@ function Game() {
             }}
         >
             <BoardContainer />
-            <Input />
+            <GoogleCaptchaWrapper>
+                <Input />
+            </GoogleCaptchaWrapper>
         </DataFlowProvider>
     );
 }

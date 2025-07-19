@@ -7,12 +7,36 @@ const inpSchema = z.object({
     gameInput: z.string().min(1, "Game details cannot be empty"),
     option: z.enum(["pgn", "link"]),
     depth: z.enum(["14", "16", "18", "20", "22"]),
+    grecaptchaToken: z.string().min(1, "reCAPTCHA failed"),
 });
+async function verifyRecaptcha(token: string): Promise<boolean> {
+    const secretKey = process.env.RECAPTCHA_SECRET_KEY!;
+    if (!secretKey) {
+        console.error("RECAPTCHA_SECRET_KEY is not set");
+        return false;
+    }
+    const res = await fetch("https://www.google.com/recaptcha/api/siteverify", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `secret=${secretKey}&response=${token}`,
+    });
+    const data = await res.json();
+    return data.success && data.score >= 0.5;
+}
 
 export async function validateInputs(_: unknown, formData: FormData) {
     const formObj = Object.fromEntries(formData.entries());
     const result = inpSchema.safeParse(formObj);
+    const { grecaptchaToken } = formObj;
+    const isHuman = await verifyRecaptcha(grecaptchaToken as string);
 
+    if (!isHuman) {
+        return {
+            errors: {
+                gameInput: ["reCAPTCHA verification failed. Please try again."],
+            },
+        };
+    }
     if (!result.success) {
         const formFieldError = result.error.flatten().fieldErrors;
         return {

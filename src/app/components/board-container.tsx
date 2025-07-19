@@ -47,7 +47,11 @@ export default function BoardContainer() {
                     />
                 </div>
                 <div className="flex items-center max-md:ml-[1.5rem]">
-                <EvalBar evalScore={evalScore} orientation={orientation} mate={mate} />
+                    <EvalBar
+                        evalScore={evalScore}
+                        orientation={orientation}
+                        mate={mate}
+                    />
                     <Board
                         fen={fen}
                         orientation={orientation}

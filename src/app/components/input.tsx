@@ -5,6 +5,7 @@ import { DepthOption, InputOption } from "../types/input";
 import { validateInputs } from "@/lib/actions";
 import Analysis from "./analysis";
 import useDataFlow from "../context/DataFlowContext";
+import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 
 export default function Input() {
     const { changeGameData } = useDataFlow();
@@ -14,16 +15,26 @@ export default function Input() {
     const [depth, setDepth] = useState<DepthOption>("14");
     const [showAnalysis, setShowAnalysis] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
+    const [grecaptchaToken, setGrecaptchaToken] = useState("");
     const [state, formAction, pending] = useActionState(validateInputs, null);
+    const { executeRecaptcha } = useGoogleReCaptcha();
 
     const inpDisabled = input.trim() === "";
     const status = inpDisabled ? "bg-gray-400" : "bg-green-400";
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        if (!executeRecaptcha) {
+            console.error("ReCaptcha not available");
+            return;
+        }
         setIsProcessing(true);
+        const token = await executeRecaptcha("validate_inputs");
+        setGrecaptchaToken(token);
+        const form = new FormData(e.target as HTMLFormElement);
+        form.set("grecaptchaToken", token); // ensure token is included
         startTransition(() => {
-            formAction(new FormData(e.currentTarget));
+            formAction(form);
         });
     };
 
@@ -72,7 +83,11 @@ export default function Input() {
                     </h1>
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <input type="hidden" name="option" value={option} />
-
+                        <input
+                            type="hidden"
+                            name="grecaptchaToken"
+                            value={grecaptchaToken}
+                        />
                         <div className="space-y-4">
                             <label className="block text-xl font-medium mb-2">
                                 Enter your game details:
@@ -150,7 +165,6 @@ export default function Input() {
                                 <option value="14">Depth 14</option>
                                 <option value="16">Depth 16</option>
                                 <option value="18">Depth 18</option>
-                                <option value="19">Depth 19</option>
                                 <option value="20">Depth 20</option>
                                 <option value="22">Depth 22</option>
                             </select>
