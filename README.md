@@ -13,7 +13,7 @@ A chess analysis tool that uses Stockfish to analyze chess games and positions. 
 - Read here [how it works](https://publish.tausiqsama.me/arch/chess-analyze).
 
 #### Usage
-- Demo is being showed in this [video](todo)
+- Demo is being showed in this [video](https://www.youtube.com/watch?v=P0t1GLgNMKk)
 - How to get PGN and game links, see this [video](https://www.youtube.com/watch?v=DDkTX70ERSA).
 
 #### Installation
