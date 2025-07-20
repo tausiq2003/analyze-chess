@@ -85,7 +85,7 @@ export type { MoveData };
 
 function ShowClassification({ moves, fen }: Props) {
     return (
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1 max-h-10 min-h-10">
             {moves.map(({ move, classification, bestMove }, idx) => {
                 const fallback = classificationMap["best"];
                 const { icon, text, className } =

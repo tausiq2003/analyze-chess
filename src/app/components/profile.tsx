@@ -27,9 +27,9 @@ function Profile() {
         ? Object.values(gameData.postitions).map((arr) => arr[0])
         : [];
     const evalData = positions.map((pos) => ({
-  cp: pos.info?.[0]?.cp ?? null,
-  mate: pos.info?.[0]?.mate ?? null,
-}));
+        cp: pos.info?.[0]?.cp ?? null,
+        mate: pos.info?.[0]?.mate ?? null,
+    }));
     // set opening name based on the current position, not checking for first n moves
     let openingName = "";
     const currentMove = positions[currentPtr];
@@ -76,22 +76,23 @@ function Profile() {
         showClassFen = positions[currentPtr].fen;
     }
     return (
-        <div className="w-full max-w-screen-lg mx-auto flex flex-col gap-6 p-4">
+        <div className="w-full max-w-screen-lg mx-auto flex flex-col gap-4 p-4 overflow-auto">
             <GraphChart data={evalData} />
             <ShowClassification moves={showClassMove} fen={showClassFen} />
             <MoveLines />
-            {openingName && (
-                <div className="text-md font-semibold text-center">
-                    Opening: {openingName}
-                </div>
-            )}
-            {result && (
-                <div className="text-md font-semibold text-center">
-                    <span className="block">Result: {result}</span>
-                    Termination: {termination}
-                </div>
-            )}
-            {}
+            <div className="max-h-16 min-h-16">
+                {openingName && (
+                    <div className="text-md font-semibold text-center">
+                        Opening: {openingName}
+                    </div>
+                )}
+                {result && (
+                    <div className="text-md font-semibold text-center">
+                        <span className="block">Result: {result}</span>
+                        Termination: {termination}
+                    </div>
+                )}
+            </div>
             <MoveList />
             <Review />
         </div>

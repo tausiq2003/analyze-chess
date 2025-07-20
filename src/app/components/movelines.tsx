@@ -63,7 +63,10 @@ export default function MoveLines() {
             }
             let evalDisplay = "0.00";
             if (line.mate !== undefined && line.mate !== null) {
-                evalDisplay = (line.mate > 0 ? "M" + line.mate : "-M" + Math.abs(line.mate));
+                evalDisplay =
+                    line.mate > 0
+                        ? "M" + line.mate
+                        : "-M" + Math.abs(line.mate);
             } else if (line.cp !== undefined && line.cp !== null) {
                 evalDisplay = (line.cp / 100).toFixed(2);
             }
@@ -74,7 +77,7 @@ export default function MoveLines() {
         }
     }
     return (
-        <div className="flex flex-col gap-3 overflow-x-auto">
+        <div className="flex flex-col gap-3 overflow-x-auto max-h-[25vh] min-h-[25vh]">
             <h1 className="text-white">Move Lines:</h1>
             {moveLines.length === 0 ? (
                 <div className="p-2 rounded-md bg-[#505050] w-full text-white text-sm">
@@ -89,7 +92,8 @@ export default function MoveLines() {
                         <div className="flex flex-wrap items-center gap-2 text-white text-sm">
                             <p
                                 className={`min-w-[50px] shrink-0 p-1 font-semibold rounded-md ${
-                                    line.eval.startsWith("-") || line.eval.startsWith("-M")
+                                    line.eval.startsWith("-") ||
+                                    line.eval.startsWith("-M")
                                         ? "bg-black text-white"
                                         : "bg-white text-black"
                                 }`}
