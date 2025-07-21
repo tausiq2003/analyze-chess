@@ -83,7 +83,7 @@ function Profile() {
     const [showDetails, setShowDetails] = useState(false);
     return (
         <div className="w-full max-w-screen-lg mx-auto flex flex-col gap-4 overflow-auto">
-            <div className="mx-2 lg-hidden relative">
+            <div className="mx-2 lg:hidden relative">
                 <button
                     className="absolute right-0 top-0 rounded-md bg-[#4c4c4c] active:bg-[#333] active:scale-95 transition-transform duration-200 ease-in-out p-1 z-10"
                     onClick={() => setShowDetails(!showDetails)}
@@ -118,6 +118,11 @@ function Profile() {
                     <GraphChart data={evalData} />
                 </div>
             )}
+            <div className="max-lg:hidden">
+                <MoveLines />
+                <MoveList />
+                <GraphChart data={evalData} />
+            </div>
         </div>
     );
 }
