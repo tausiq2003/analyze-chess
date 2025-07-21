@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import GraphChart from "./graph-chart";
 import ShowClassification, { MoveData } from "./showclassification";
 import useDataFlow from "../context/DataFlowContext";
@@ -24,7 +24,7 @@ type ClassificationType =
     | "book";
 
 function Profile() {
-    const { gameData, currentPtr } = useDataFlow();
+    const { gameData, currentPtr, movePrev, moveNext } = useDataFlow();
     let result = "";
     let termination = "";
 
@@ -81,6 +81,20 @@ function Profile() {
         showClassFen = positions[currentPtr].fen;
     }
     const [showDetails, setShowDetails] = useState(false);
+    useEffect(() => {
+        const keydownHandler = (e: KeyboardEvent) => {
+            if (e.key === "ArrowLeft") {
+                movePrev();
+            } else if (e.key === "ArrowRight") {
+                moveNext();
+            }
+        };
+        window.addEventListener("keydown", keydownHandler);
+        return () => {
+            window.removeEventListener("keydown", keydownHandler);
+        };
+    }, [movePrev, moveNext]);
+
     return (
         <div className="w-full max-w-screen-lg mx-auto flex flex-col gap-4 overflow-auto">
             <div className="mx-2 lg:hidden relative">
