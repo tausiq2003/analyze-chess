@@ -115,9 +115,9 @@ export default function Analysis() {
         analyzeGame();
     }, [gameData.pgn, gameData.depth]);
     const evalData = positions.map((pos) => ({
-  cp: pos.info?.[0]?.cp ?? null,
-  mate: pos.info?.[0]?.mate ?? null,
-}));
+        cp: pos.info?.[0]?.cp ?? null,
+        mate: pos.info?.[0]?.mate ?? null,
+    }));
 
     if (loading)
         return (
@@ -146,7 +146,7 @@ export default function Analysis() {
     return (
         <>
             <div>
-                <h1 className="text-xl">Overview:</h1>
+                <h1 className="text-xl mb-2">Overview:</h1>
                 <GraphChart data={evalData} />
                 <Summary
                     accuracy={accuracy}

@@ -77,7 +77,7 @@ export default function MoveLines() {
         }
     }
     return (
-        <div className="flex flex-col gap-3 overflow-x-auto max-h-[25vh] min-h-[25vh]">
+        <div className="flex flex-col gap-3 overflow-x-auto max-h-[25vh] min-h-min">
             <h1 className="text-white">Move Lines:</h1>
             {moveLines.length === 0 ? (
                 <div className="p-2 rounded-md bg-[#505050] w-full text-white text-sm">

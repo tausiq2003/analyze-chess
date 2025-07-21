@@ -17,7 +17,7 @@ export default function Review() {
         ? Object.values(gameData.postitions).map((arr) => arr[0])
         : [];
     return (
-        <div className="flex flex-row w-full gap-6 justify-evenly">
+        <div className="flex flex-row w-full gap-6 justify-evenly mt-4">
             <button
                 className="bg-[#4c4c4c] w-full py-3 text-xl text-white rounded-md mt-4 flex flex-row justify-center active:scale-90"
                 title="Flip board"

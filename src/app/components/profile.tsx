@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import GraphChart from "./graph-chart";
 import ShowClassification, { MoveData } from "./showclassification";
 import useDataFlow from "../context/DataFlowContext";
@@ -7,6 +7,11 @@ import Review from "./review";
 import { Chess } from "chess.js";
 import MoveList from "./movelist";
 import MoveLines from "./movelines";
+import {
+    MdOutlineKeyboardArrowDown,
+    MdOutlineKeyboardArrowUp,
+} from "react-icons/md";
+
 type ClassificationType =
     | "brilliant"
     | "great"
@@ -75,11 +80,24 @@ function Profile() {
         ];
         showClassFen = positions[currentPtr].fen;
     }
+    const [showDetails, setShowDetails] = useState(false);
     return (
-        <div className="w-full max-w-screen-lg mx-auto flex flex-col gap-4 p-4 overflow-auto">
-            <GraphChart data={evalData} />
+        <div className="w-full max-w-screen-lg mx-auto flex flex-col gap-4 overflow-auto">
+            <div className="mx-2 lg-hidden relative">
+                <button
+                    className="absolute right-0 top-0 rounded-md bg-[#4c4c4c] active:bg-[#333] active:scale-95 transition-transform duration-200 ease-in-out p-1 z-10"
+                    onClick={() => setShowDetails(!showDetails)}
+                >
+                    {showDetails ? (
+                        <MdOutlineKeyboardArrowUp className="text-white text-xl" />
+                    ) : (
+                        <MdOutlineKeyboardArrowDown className="text-white text-xl" />
+                    )}
+                </button>
+            </div>
+            <Review />
             <ShowClassification moves={showClassMove} fen={showClassFen} />
-            <MoveLines />
+
             <div className="max-h-16 min-h-16">
                 {openingName && (
                     <div className="text-md font-semibold text-center">
@@ -93,8 +111,13 @@ function Profile() {
                     </div>
                 )}
             </div>
-            <MoveList />
-            <Review />
+            {showDetails && (
+                <div>
+                    <MoveLines />
+                    <MoveList />
+                    <GraphChart data={evalData} />
+                </div>
+            )}
         </div>
     );
 }
